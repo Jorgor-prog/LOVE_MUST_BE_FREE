@@ -1,0 +1,63 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  loginId        String    @unique
+  loginPassword  String
+  passwordHash   String?
+  role           Role
+  adminNoteName String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  profile        Profile?
+  codeConfig     CodeConfig?
+  messagesFrom   Message[] @relation("messagesFrom")
+  messagesTo     Message[] @relation("messagesTo")
+  sessions       Session[]
+}
+
+model Profile {
+  userId     Int   @id
+  nameOnSite String?
+  idOnSite   String?
+  residence  String?
+  photoUrl   String?
+  user       User  @relation(fields: [userId], references: [id])
+}
+
+model CodeConfig {
+  userId   Int   @id
+  lastStep Int   @default(1)
+  paused   Boolean @default(false)
+  user     User  @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  fromId    Int
+  toId      Int
+  text      String
+  createdAt DateTime @default(now())
+  from      User     @relation("messagesFrom", fields: [fromId], references: [id])
+  to        User     @relation("messagesTo", fields: [toId], references: [id])
+}
+
+model Session {
+  token     String   @id
+  userId    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
