@@ -20,6 +20,9 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
+    "@types/node": "^20.19.11",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
     "prisma": "5.18.0",
     "typescript": "5.5.4"
   }
