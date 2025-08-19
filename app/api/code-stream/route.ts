@@ -1,4 +1,4 @@
-
+export const dynamic = "force-dynamic"
 export async function GET() {
   const encoder = new TextEncoder()
   const stream = new ReadableStream({
