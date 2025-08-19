@@ -1,9 +1,7 @@
-
 import { NextResponse } from "next/server"
 import { prisma } from "./prisma"
 import { createSession, getSession, getSessionToken, clearSession } from "./cookies"
 import { cookies } from "next/headers"
-import { compare } from "bcryptjs"
 
 export async function login(loginId: string, password: string) {
   const u = await prisma.user.findUnique({ where: { loginId } })
