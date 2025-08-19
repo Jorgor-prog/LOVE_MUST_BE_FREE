@@ -1,5 +1,8 @@
-
 import { PrismaClient } from "@prisma/client"
-const globalAny = global as any
-export const prisma = globalAny.prisma || new PrismaClient()
-if (!globalAny.prisma) globalAny.prisma = prisma
+
+declare global {
+  var prisma: PrismaClient | undefined
+}
+
+export const prisma: PrismaClient = globalThis.prisma ?? new PrismaClient()
+if (!globalThis.prisma) globalThis.prisma = prisma
