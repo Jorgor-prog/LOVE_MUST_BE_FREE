@@ -1,4 +1,3 @@
-
 "use client"
 import Link from "next/link"
 import Image from "next/image"
@@ -12,27 +11,32 @@ export default function UserTopBar() {
     return "/dashboard"
   }
   useEffect(()=>{
-    let latestSeen = Number(localStorage.getItem("inbox_last_seen")||"0")
-    let last = latestSeen
-    let t = setInterval(async ()=>{
+    let lastKnown = Number(localStorage.getItem("inbox_last_seen")||"0")
+    async function check() {
       try {
         const r = await fetch("/api/chat/inbox", { cache: "no-store" })
         const j = await r.json()
-        last = j.latestId || 0
-        const seen = Number(localStorage.getItem("inbox_last_seen")||"0")
-        setHasNew(last>seen)
-      } catch(e){}
-    }, 4000)
-    return ()=>clearInterval(t)
+        const latest = Number(j.latestId||0)
+        lastKnown = Number(localStorage.getItem("inbox_last_seen")||"0")
+        setHasNew(latest>lastKnown)
+      } catch {}
+    }
+    const t = setInterval(check, 4000)
+    check()
+    function onSeenUpdate() {
+      lastKnown = Number(localStorage.getItem("inbox_last_seen")||"0")
+      setHasNew(false)
+    }
+    window.addEventListener("inbox_seen_update", onSeenUpdate)
+    return ()=>{ clearInterval(t); window.removeEventListener("inbox_seen_update", onSeenUpdate) }
   },[])
   return (
     <div className="topbar">
       <div className="logo">
-        <Image src="/images/Logo_3.webp" width={40} height={40} alt="" />
+        <Image src="/images/Logo_3.webp" width={56} height={56} alt="" />
         <span>LOVE MUST BE FREE</span>
       </div>
       <div className="row">
-        <Link href={homeHref()} className="btn">Back</Link>
         <Link href={homeHref()} className="btn">Home</Link>
         <Link href="/reviews" className="btn">Reviews</Link>
         <Link href="/about" className="btn">About</Link>
